@@ -46,4 +46,44 @@
             android:text="I thick i can" />
     </com.xxnan.flowlayout.view.FlowLayout>
 
+    
+    
+     <com.xxnan.flowlayout.view.FlowLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            style="@style/text_style_1"
+            android:text="android" />
+
+        <TextView
+            style="@style/text_style_1"
+            android:text="ios" />
+
+        <TextView
+            style="@style/text_style_1"
+            android:text="python" />
+
+        <TextView
+            style="@style/text_style_1"
+            android:text="php" />
+
+        <TextView
+            style="@style/text_style_1"
+            android:text="js" />
+
+        <TextView
+            style="@style/text_style_1"
+            android:text="java" />
+
+        <TextView
+            style="@style/text_style_1"
+            android:text="c" />
+
+        <TextView
+            style="@style/text_style_1"
+            android:text="c++" />
+
+      
+    </com.xxnan.flowlayout.view.FlowLayout>
 </LinearLayout>

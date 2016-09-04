@@ -42,16 +42,23 @@ public class FlowLayout extends ViewGroup {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		//获取宽度
 		int sizeWidth = MeasureSpec.getSize(widthMeasureSpec);
+		//获取高度
 		int sizeHeight = MeasureSpec.getSize(heightMeasureSpec);
+		//宽度mode
 		int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+		//高度mode
 		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+		//实际的宽度
 		int width = 0;
+		//实际的高度
 		int height = 0;
 		// 每一行的宽度
 		int lineWidth = 0;
+		//每一行的高度
 		int lineHeight = 0;
-
+		//viewgroup子view的个数
 		int childCount = getChildCount();
 		for (int i = 0; i < childCount; i++) {
 			View child = getChildAt(i);
@@ -63,8 +70,8 @@ public class FlowLayout extends ViewGroup {
 					+ pLayoutParams.rightMargin;
 			int childHeight = child.getMeasuredHeight() + pLayoutParams.topMargin
 					+ pLayoutParams.bottomMargin;
-			// 长度大于屏幕的长度
-			if (lineWidth + childWidth > sizeHeight) {
+			// 长度大于屏幕的长度则换一行高度加上每行的高度，宽度取大的
+			if (lineWidth + childWidth > sizeWidth) {
 				width = Math.max(lineWidth, sizeWidth);
 				height += lineHeight;
 				// 新的一行开始
@@ -72,6 +79,7 @@ public class FlowLayout extends ViewGroup {
 				lineHeight = childHeight;
 			} else {
 				lineWidth += childWidth;
+				//取view的高度的最大值，（每行里高度最高的为每行的高度）
 				lineHeight = Math.max(lineHeight, childHeight);
 			}
 			// 如果是最后一个，则将当前记录的最大宽度和当前lineWidth做比较  
@@ -107,19 +115,18 @@ public class FlowLayout extends ViewGroup {
 			View childView = getChildAt(i);
 			MarginLayoutParams lp = (MarginLayoutParams) childView
 					.getLayoutParams();
-			int childWidth = childView.getMeasuredWidth();
-			int childHeight = childView.getMeasuredHeight();
+			int childWidth = childView.getMeasuredWidth()+ lp.leftMargin + lp.rightMargin;
+			int childHeight = childView.getMeasuredHeight() + lp.bottomMargin
+			+ lp.topMargin;
 			// 需要换行
-			if (lineWidth + childWidth + lp.leftMargin + lp.rightMargin > width) {
+			if (lineWidth + childWidth  > width) {
 				allView.add(lineViews);
 				heightList.add(lineHeight);
 				lineWidth = 0;
-//				lineHeight = childHeight;
 				lineViews = new ArrayList<View>();
 			}
-			lineWidth +=childWidth + lp.leftMargin + lp.rightMargin;
-			lineHeight = Math.max(lineHeight, childHeight + lp.bottomMargin
-					+ lp.topMargin);
+			lineWidth +=childWidth;
+			lineHeight = Math.max(lineHeight, childHeight);
 			lineViews.add(childView);
 		}
 		// 记录最后一行  
@@ -129,9 +136,9 @@ public class FlowLayout extends ViewGroup {
 		int top = 0;
 		int countViews = allView.size();
 		for (int i = 0; i < countViews; i++) {
-			List<View> lineViewsList = allView.get(i);
+			lineViews = allView.get(i);
 			lineHeight = heightList.get(i);
-			int lineViewsCount = lineViewsList.size();
+			int lineViewsCount = lineViews.size();
 			for (int j = 0; j < lineViewsCount; j++) {
 				View childView = getChildAt(j);
 				MarginLayoutParams marginLayoutParams = (MarginLayoutParams) childView
@@ -143,7 +150,7 @@ public class FlowLayout extends ViewGroup {
 				int tc = top + marginLayoutParams.topMargin;
 				int rc = lc + childView.getMeasuredWidth();
 				int bc = tc + childView.getMeasuredHeight();
-				layout(lc, tc, rc, bc);
+				childView.layout(lc, tc, rc, bc);
 				left += childView.getMeasuredWidth()
 						+ marginLayoutParams.leftMargin
 						+ marginLayoutParams.rightMargin;
