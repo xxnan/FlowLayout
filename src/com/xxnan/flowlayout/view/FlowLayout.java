@@ -10,7 +10,11 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-
+/**
+ * time: 2016/9/3
+ * @author xxnan
+ *
+ */
 public class FlowLayout extends ViewGroup {
 
 	public FlowLayout(Context context, AttributeSet attrs) {
@@ -52,7 +56,7 @@ public class FlowLayout extends ViewGroup {
 		int heightMode = MeasureSpec.getMode(heightMeasureSpec);
 		//实际的宽度
 		int width = 0;
-		//实际的高度
+		//实际的高度(每一行累加)
 		int height = 0;
 		// 每一行的宽度
 		int lineWidth = 0;
