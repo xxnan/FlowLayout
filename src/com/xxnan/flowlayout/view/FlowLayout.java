@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.R.integer;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -14,7 +15,6 @@ public class FlowLayout extends ViewGroup {
 
 	public FlowLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -70,9 +70,9 @@ public class FlowLayout extends ViewGroup {
 					+ pLayoutParams.rightMargin;
 			int childHeight = child.getMeasuredHeight() + pLayoutParams.topMargin
 					+ pLayoutParams.bottomMargin;
-			// 长度大于屏幕的长度则换一行高度加上每行的高度，宽度取大的
+			// 长度大于屏幕的长度则换一行，高度加上每行的高度，宽度取大的
 			if (lineWidth + childWidth > sizeWidth) {
-				width = Math.max(lineWidth, sizeWidth);
+				width = Math.max(lineWidth, childWidth);
 				height += lineHeight;
 				// 新的一行开始
 				lineWidth = childWidth;
@@ -106,56 +106,75 @@ public class FlowLayout extends ViewGroup {
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
 		allView.clear();
 		heightList.clear();
+		//屏幕的宽度
 		int width = getWidth();
+		//每一行的宽度
 		int lineWidth = 0;
+		//每一行的高度
 		int lineHeight = 0;
+		//总的子view的个数
 		int count = getChildCount();
 		List<View> lineViews = new ArrayList<View>();
 		for (int i = 0; i < count; i++) {
-			View childView = getChildAt(i);
-			MarginLayoutParams lp = (MarginLayoutParams) childView
+			//获取每一个子view
+			View child = getChildAt(i);
+			MarginLayoutParams lp = (MarginLayoutParams) child
 					.getLayoutParams();
-			int childWidth = childView.getMeasuredWidth()+ lp.leftMargin + lp.rightMargin;
-			int childHeight = childView.getMeasuredHeight() + lp.bottomMargin
-			+ lp.topMargin;
+			//子view的宽度
+			int childWidth = child.getMeasuredWidth();
+			//子view的高度
+			int childHeight = child.getMeasuredHeight();                    
 			// 需要换行
-			if (lineWidth + childWidth  > width) {
+			if (lineWidth + childWidth+ lp.leftMargin + lp.rightMargin  > width) {
 				allView.add(lineViews);
 				heightList.add(lineHeight);
+				//新的一行开始
 				lineWidth = 0;
 				lineViews = new ArrayList<View>();
 			}
-			lineWidth +=childWidth;
-			lineHeight = Math.max(lineHeight, childHeight);
-			lineViews.add(childView);
+			lineWidth +=childWidth+ lp.leftMargin + lp.rightMargin;
+			lineHeight = Math.max(lineHeight, childHeight+ lp.topMargin + lp.bottomMargin);
+			//view添加到每一行的集合里面
+			lineViews.add(child);
 		}
 		// 记录最后一行  
         heightList.add(lineHeight);  
         allView.add(lineViews);  
+        
+        //每个view的左边距离和离顶部距离
 		int left = 0;
 		int top = 0;
 		int countViews = allView.size();
 		for (int i = 0; i < countViews; i++) {
+			//每一行的view的集合
 			lineViews = allView.get(i);
+			//每一行的高度
 			lineHeight = heightList.get(i);
 			int lineViewsCount = lineViews.size();
 			for (int j = 0; j < lineViewsCount; j++) {
+				//遍历每一行的子view并布局
 				View childView = getChildAt(j);
 				MarginLayoutParams marginLayoutParams = (MarginLayoutParams) childView
 						.getLayoutParams();
+				//如果子view的Visibility属性==GONE跳过这个view
 				if (childView.getVisibility() == View.GONE) {
 					continue;
 				}
+				//计算每个view的left,top,right,buttom
 				int lc = left + marginLayoutParams.leftMargin;
 				int tc = top + marginLayoutParams.topMargin;
 				int rc = lc + childView.getMeasuredWidth();
 				int bc = tc + childView.getMeasuredHeight();
+				//布局
 				childView.layout(lc, tc, rc, bc);
+				//每一行的开始left都要加上前面的view的width
 				left += childView.getMeasuredWidth()
 						+ marginLayoutParams.leftMargin
 						+ marginLayoutParams.rightMargin;
 
 			}
+			//一行结束left重置为0
+			//高度则加上上一行的高度
 			 left = 0;  
 	         top += lineHeight;  
 		}
